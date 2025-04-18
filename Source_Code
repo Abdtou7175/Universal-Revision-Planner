@@ -1,0 +1,146 @@
+// File: src/App.jsx
+import React, { useState } from 'react';
+import './App.css';
+
+/**
+ * Smart Exam Study Planner App
+ * - Step 1: Set the revision period
+ * - Step 2: Add exam subjects and topics
+ * - Step 3: Define your weekly availability for revision
+ * - Step 4: Generate a study plan that evenly distributes revision sessions
+ */
+
+function App() {
+  // Revision period (start and end dates)
+  const [revisionPeriod, setRevisionPeriod] = useState({ startDate: '', endDate: '' });
+
+  // List of all exam entries added by the user
+  const [exams, setExams] = useState([]);
+
+  // Weekly time slots available for revision
+  const [availability, setAvailability] = useState([]);
+
+  // Final generated schedule after planning
+  const [schedule, setSchedule] = useState([]);
+
+  // Form state for adding a new exam entry
+  const [form, setForm] = useState({
+    subject: '', paper: '', confidence: '', date: '', startTime: '', endTime: '', location: ''
+  });
+
+  // Form state for adding a new weekly availability slot
+  const [slot, setSlot] = useState({ day: '', start: '', end: '', type: 'Revision Time' });
+
+  // Adds a new exam to the list
+  const addExam = () => {
+    setExams(prev => [...prev, form]);
+    setForm({ subject: '', paper: '', confidence: '', date: '', startTime: '', endTime: '', location: '' });
+  };
+
+  // Adds a new availability slot
+  const addSlot = () => {
+    setAvailability(prev => [...prev, slot]);
+    setSlot({ day: '', start: '', end: '', type: 'Revision Time' });
+  };
+
+  // Simple scheduling algorithm that loops through availability and assigns exams
+  const generateSchedule = () => {
+    if (!revisionPeriod.startDate || !revisionPeriod.endDate || exams.length === 0 || availability.length === 0) {
+      alert('Please complete Steps 1-4 before generating a plan.');
+      return;
+    }
+
+    // Distribute exams across available slots (basic rotation)
+    const plan = exams.map((exam, i) => {
+      const slot = availability[i % availability.length];
+      return {
+        ...exam,
+        scheduledDay: slot.day,
+        scheduledStart: slot.start,
+        scheduledEnd: slot.end,
+      };
+    });
+
+    setSchedule(plan);
+  };
+
+  return (
+    <div className="app-container">
+      <h1 className="title">Smart Exam Study Planner</h1>
+
+      {/* Step 1: Set Revision Period */}
+      <div className="step">
+        <h2>Step 1: Revision Period</h2>
+        <div className="step-content">
+          <label>Start Date:</label>
+          <input type="date" value={revisionPeriod.startDate} onChange={e => setRevisionPeriod({ ...revisionPeriod, startDate: e.target.value })} />
+          <label>End Date:</label>
+          <input type="date" value={revisionPeriod.endDate} onChange={e => setRevisionPeriod({ ...revisionPeriod, endDate: e.target.value })} />
+        </div>
+      </div>
+
+      {/* Step 2: Add Exams */}
+      <div className="step">
+        <h2>Step 2: Add Subject / Paper / Topic</h2>
+        <div className="step-content">
+          <input placeholder="Subject Name (e.g., A-Level Maths)" value={form.subject} onChange={e => setForm({ ...form, subject: e.target.value })} />
+          <input placeholder="Paper / Topic (e.g., Paper 1 Pure)" value={form.paper} onChange={e => setForm({ ...form, paper: e.target.value })} />
+          <select value={form.confidence} onChange={e => setForm({ ...form, confidence: e.target.value })}>
+            <option value="">Confidence (RAG)</option>
+            <option value="Red">🔴 Red</option>
+            <option value="Amber">🟠 Amber</option>
+            <option value="Green">🟢 Green</option>
+          </select>
+          <input type="date" value={form.date} onChange={e => setForm({ ...form, date: e.target.value })} />
+          <input type="time" value={form.startTime} onChange={e => setForm({ ...form, startTime: e.target.value })} />
+          <input type="time" value={form.endTime} onChange={e => setForm({ ...form, endTime: e.target.value })} />
+          <input placeholder="Exam Location" value={form.location} onChange={e => setForm({ ...form, location: e.target.value })} />
+          <button className="primary" onClick={addExam}>Add Exam</button>
+        </div>
+        <ul className="list">
+          {exams.map((e, idx) => <li key={idx}>{e.subject} - {e.paper} ({e.confidence}) on {e.date}</li>)}
+        </ul>
+      </div>
+
+      {/* Step 3: Weekly Availability */}
+      <div className="step">
+        <h2>Step 3: Weekly Availability</h2>
+        <div className="step-content">
+          <select value={slot.day} onChange={e => setSlot({ ...slot, day: e.target.value })}>
+            <option value="">Select Day</option>
+            {["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"].map(d => <option key={d}>{d}</option>)}
+          </select>
+          <input type="time" value={slot.start} onChange={e => setSlot({ ...slot, start: e.target.value })} />
+          <span>to</span>
+          <input type="time" value={slot.end} onChange={e => setSlot({ ...slot, end: e.target.value })} />
+          <select value={slot.type} onChange={e => setSlot({ ...slot, type: e.target.value })}>
+            <option>Revision Time</option>
+            <option>Fixed Break</option>
+          </select>
+          <button className="primary" onClick={addSlot}>Add Slot</button>
+        </div>
+        <ul className="list">
+          {availability.map((s, idx) => <li key={idx}>{s.day}: {s.start} - {s.end} ({s.type})</li>)}
+        </ul>
+      </div>
+
+      {/* Step 4: Generate Schedule */}
+      <div className="step">
+        <h2>Step 4: Generate Schedule</h2>
+        <button className="primary generate" onClick={generateSchedule}>✨ Generate My Revision Plan ✨</button>
+      </div>
+
+      {/* Display the generated schedule */}
+      <div className="step">
+        <h2>Your Revision Plan:</h2>
+        <ul className="list">
+          {schedule.map((s, idx) => (
+            <li key={idx}>{s.subject} ({s.paper}) — {s.scheduledDay} from {s.scheduledStart} to {s.scheduledEnd}</li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+export default App;
