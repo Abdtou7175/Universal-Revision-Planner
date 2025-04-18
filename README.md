@@ -15,11 +15,22 @@ A web app that helps students plan their revision by organizing exams, reducing 
 - **HTML5 & CSS3** (Flexbox layout)  
 - **Netlify** (for deployment)
 
-📦 Installation
+🎯 Usage
+Step 1: Pick your revision start & end dates.
 
-1. Clone the repo:  
-   ```bash
-   git clone https://github.com/yourusername/study-planner.git
-   cd study-planner
+Step 2: Add each exam (fill in subject, paper, RAG confidence, date/time, location).
 
+Step 3: Map your weekly free blocks (or breaks).
+
+Step 4: Click Generate My Revision Plan
+
+
+📈 Next Steps
+
+- User accounts & saved schedules
+- Email/push reminders
+- Better Progress tracking & stats
+
+🤝 Contributing
+Feel free to open issues or submit pull requests. Please follow the existing code style (semi‑colons, functional components, CSS modules).
 Check it out at: https://stirring-bavarois-8753e0.netlify.app/
